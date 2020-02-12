@@ -10,22 +10,20 @@ struct TreeNode {
 TreeNode *newNode(int nodeVal);
 void insertNode(TreeNode *root, int data);
 void deleteNode(TreeNode *root, int key);
-TreeNode *searchNodeParent(TreeNode *root, int key);
+void searchNodeParent(TreeNode *root, int key, TreeNode **returnNode);
+TreeNode *searchNode(TreeNode *root, int key);
 TreeNode *smallestInRight(TreeNode *root);
 void printTree(TreeNode *root);
 void recursion(TreeNode *root);
 
 int main() {
-  TreeNode *head = newNode(5);
-  insertNode(head, 3);
-  insertNode(head, 6);
+  TreeNode *head = newNode(1);
   insertNode(head, 2);
-  insertNode(head, 4);
-  insertNode(head, 7);
+  insertNode(head, 3);
 
-  printTree(head);
+  // printTree(head);
 
-  deleteNode(head, 3);
+  deleteNode(head, 2);
 
   cout << "After deletion" << endl;
   printTree(head);
@@ -51,35 +49,38 @@ void insertNode(TreeNode *root, int data) {
   }
 }
 
-TreeNode *searchNodeParent(TreeNode *root, int key) {
+void searchNodeParent(TreeNode *root, int key, TreeNode **returnNode) {
   if (root) {
     if (root->left && root->left->val == key ||
         root->right && root->right->val == key) {
-      return root;
-    } else if (key > root->val && root->right != NULL) {
-      searchNodeParent(root->right, key);
+      *returnNode = root;
+    } else if (key >= root->val && root->right != NULL) {
+      searchNodeParent(root->right, key, returnNode);
     } else if (key < root->val && root->left != NULL) {
-      searchNodeParent(root->left, key);
+      searchNodeParent(root->left, key, returnNode);
     } else {
-      return NULL;
+      returnNode = NULL;
     }
   } else {
-    return NULL;
+    returnNode = NULL;
   }
 }
 
 void deleteNode(TreeNode *root, int key) {
-  TreeNode *parent = searchNodeParent(root, key);
+  TreeNode *parent;
+  searchNodeParent(root, key, &parent);
   TreeNode *target;
 
   if (parent) {
-    if (parent->val < key) {
+    if (parent->val < key && parent->right != NULL) {
       target = parent->right;
-    } else {
+    } else if (parent->val > key && parent->left != NULL) {
       target = parent->left;
+    } else {
+      target = NULL;
     }
   } else {
-    target = root;
+    target = searchNode(root, key);
   }
 
   if (target) {
@@ -208,15 +209,15 @@ void recursion(TreeNode *root) {
 //   }
 // }
 
-// TreeNode *searchNode(TreeNode *root, int key) {
-//   if (root->val == key) {
-//     return (root);
-//   } else if (key > root->val && root->right != NULL) {
-//     searchNode(root->right, key);
-//   } else if (key < root->val && root->left != NULL) {
-//     searchNode(root->left, key);
-//   } else {
-//     cout << "Node doesn't exist in the tree!" << endl;
-//     return NULL;
-//   }
-// }
+TreeNode *searchNode(TreeNode *root, int key) {
+  if (root->val == key) {
+    return (root);
+  } else if (key > root->val && root->right != NULL) {
+    searchNode(root->right, key);
+  } else if (key < root->val && root->left != NULL) {
+    searchNode(root->left, key);
+  } else {
+    cout << "Node doesn't exist in the tree!" << endl;
+    return NULL;
+  }
+}
