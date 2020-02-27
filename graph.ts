@@ -57,18 +57,39 @@ graphNode1.addNeighbour([graphNode2, graphNode3]);
 graphNode2.addNeighbour([graphNode4]);
 graphNode3.addNeighbour([graphNode5]);
 
-const recursion = (graphNode: GraphNode) => {
+const depthRecursion = (graphNode: GraphNode) => {
   graphNode.getNeighbours.forEach((neighbour) => {
     if (!neighbour.isVisited) {
       console.log(`${neighbour.getVal} is ${graphNode.getVal}'s neighbour.`);
-      recursion(neighbour);
+      depthRecursion(neighbour);
     }
   });
 };
 
-const breadthPrint = (entry: GraphNode) => {
+const depthPrint = (entry: GraphNode) => {
   console.log(`${entry.getVal} is root`);
-  recursion(entry);
+  depthRecursion(entry);
 };
 
+const breadthPrint = (entry: GraphNode) => {
+  const neighboursQueue: Set<GraphNode> = new Set();
+  console.log(`${entry.getVal} is root.`);
+  entry.getNeighbours.forEach((neighbour) => {
+    if (!neighbour.isVisited) {
+      console.log(`${neighbour.getVal} is ${entry.getVal}'s neighbour.`);
+      neighboursQueue.add(neighbour);
+    }
+  });
+  neighboursQueue.forEach((node) => {
+    node.getNeighbours.forEach((neighbour) => {
+      if (!neighbour.isVisited) {
+        console.log(`${neighbour.getVal} is ${node.getVal}'s neighbour.`);
+        neighboursQueue.add(neighbour);
+      }
+    });
+    neighboursQueue.delete(node);
+  });
+};
+
+// depthPrint(graphNode1);
 breadthPrint(graphNode1);
